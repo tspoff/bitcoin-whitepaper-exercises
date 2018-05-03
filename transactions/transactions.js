@@ -78,7 +78,7 @@ function createBlock(data) {
 function createTransaction(data) {
 	var tr = {
 		data: data,
-	}
+	};
 
 	tr.hash = transactionHash(tr);
 
@@ -149,9 +149,27 @@ async function verifyBlock(bl) {
 		if (!Array.isArray(bl.data)) return false;
 
 		// TODO: verify transactions in block
+		for (let tr of bl.data) {	
+			if (!verifyTransaction(tr)){
+				return false;
+			}
+		}
 	}
 
 	return true;
+}
+
+function verifyTransaction(tr) {
+	if (typeof tr.data === "string" &&
+		tr.data != "" &&
+		tr.hash === transactionHash(tr) &&
+		tr.pubKey != null &&
+		verifySignature(tr.signature) != false 
+	) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 async function verifyChain(chain) {
